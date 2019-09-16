@@ -13,9 +13,9 @@ pdb=$1
 prefix=$2
 seed=$3
 
-$rosetta -database $database -s $pdb -out:prefix $prefix -jran $seed @flags.long
+$rosetta -database $database -s $pdb -out:prefix $prefix -jran $seed @flags.loop
 
-flags.long:
+flags.loop:
 
 -in:ignore_unrecognized_res
 -overwrite

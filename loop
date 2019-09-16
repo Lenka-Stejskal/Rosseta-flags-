@@ -1,0 +1,50 @@
+#!/bin/bash
+
+if [ $# -ne 3 ]; then
+        echo "Usage: $0 pdb_file prefix seed"
+        exit 1
+fi
+
+
+
+rosetta="/s/rosetta/v3.7/rosetta_bin_linux_2016.32.58837_bundle/main/source/bin/loopmodel.linuxgccrelease"
+database="/s/rosetta/v3.7/rosetta_bin_linux_2016.32.58837_bundle/main/database"
+pdb=$1
+prefix=$2
+seed=$3
+
+$rosetta -database $database -s $pdb -out:prefix $prefix -jran $seed @flags.long
+
+flags.long:
+
+-in:ignore_unrecognized_res
+-overwrite
+-nstruct 200
+-constant_seed
+-ex1
+-ex2
+-loops:remodel perturb_kic_with_fragments
+-loops:refine refine_kic_with_fragments
+-loops:fix_natsc
+-rebuild_disulf true
+-loops:loop_file 4MWF.loops
+-constraints:cst_fa_file 4MWF.fa.cst
+-constraints:cst_fa_weight 1.0
+-constraints:cst_file 4MWF.cst
+-constraints:cst_weight 1.0
+-loops:frag_sizes 9 3 1 
+-loops:frag_files  /d/as12/u/sl002/rosett/run/loop/run_fr_1/fragments_9.txt /d/as12/u/sl002/rosett/run/loop/run_fr_1/fragments_3.txt none 
+-in:file:fullatom
+-out:file:fullatom
+
+4MWF.cst:
+
+AtomPair CA 76 CA 103 HARMONIC 5.0 1.0
+
+4MWF.fa.cst: 
+AtomPair SG 76 SG 103 HARMONIC 2.05 0.05
+
+4MWF.loops: 
+LOOP 70 108
+
+

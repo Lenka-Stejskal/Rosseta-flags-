@@ -1,0 +1,45 @@
+#!/bin/bash
+
+if [ $# -ne 3 ]; then
+        echo "Usage: $0 pdb_file prefix seed"
+        exit 1
+fi
+
+
+rosetta="/s/rosetta/v3.7/rosetta_bin_linux_2016.32.58837_bundle/main/source/bin/FloppyTail.linuxgccrelease"
+database="/s/rosetta/v3.7/rosetta_bin_linux_2016.32.58837_bundle/main/database"
+pdb=$1
+prefix=$2
+seed=$3
+
+$rosetta -database $database -s $pdb -out:prefix $prefix -jran $seed @flags.tail
+
+flags.tail: 
+-ignore_unrecognized_res
+-ex1
+-ex2
+-use_input_sc
+-constant_seed
+-packing:repack_only
+-run:min_type dfpmin_armijo_nonmonotone
+-FloppyTail:flexible_chain D
+-flexible_start_resnum 1
+-flexible_stop_resnum 29
+-flexible_chain D
+-short_tail_off 0.2
+-short_tail_fraction 0.33
+-shear_on 0.333333333333333333
+-FloppyTail:refine_repack_cycles 40
+-FloppyTail:perturb_cycles 5000
+-FloppyTail:refine_cycles 3000
+-FloppyTail:refine_temp 0.8
+-FloppyTail:perturb_temp 0.8
+-C_root
+
+-in::file::frag3 fragment_3.txt
+-in::file::frag9 fragmets_9.txt
+
+-overwrite
+-nstruct 200
+
+
